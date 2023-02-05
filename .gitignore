@@ -77,3 +77,6 @@ artifacts/
 .tools/vswhere/
 .dotnet/
 *.svclog
+*.swp
+/squirrel/
+publish/

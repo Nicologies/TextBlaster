@@ -3,6 +3,7 @@ using System.Windows;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Mvvm;
+using Squirrel;
 using TextBlaster.Main;
 using TextBlaster.ProcessList;
 using TextBlaster.ProcessPicker;
@@ -20,6 +21,11 @@ public partial class App
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        SquirrelAwareApp.HandleEvents(
+            onInitialInstall: OnAppInstall,
+            onAppUninstall: OnAppUninstall,
+            onEveryRun: OnAppRun);
+
         ViewModelLocationProvider.SetDefaultViewTypeToViewModelTypeResolver((viewType) =>
         {
             var viewName = viewType.FullName!;
@@ -33,6 +39,21 @@ public partial class App
             return Type.GetType(viewModelName);
         });
         base.OnStartup(e);
+    }
+
+    private static void OnAppInstall(SemanticVersion version, IAppTools tools)
+    {
+        tools.CreateShortcutForThisExe();
+    }
+
+    private static void OnAppUninstall(SemanticVersion version, IAppTools tools)
+    {
+        tools.RemoveShortcutForThisExe();
+    }
+
+    private static void OnAppRun(SemanticVersion version, IAppTools tools, bool firstRun)
+    {
+        tools.SetProcessAppUserModelId();
     }
 
     protected override void RegisterTypes(IContainerRegistry containerRegistry)

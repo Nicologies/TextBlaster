@@ -1,5 +1,5 @@
 <Project>
   <ItemGroup Condition="'$(EnableStyleCopAnalyzers)' != 'false'">
-    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" Version="1.1.118" />
+    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" Version="1.2.0-beta.435" />
   </ItemGroup>
 </Project>
