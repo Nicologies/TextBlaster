@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="TextBlaster.HistoryList.HistoryListView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:viewModels="clr-namespace:TextBlaster" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        mc:Ignorable="d" d:Width="200" d:Height="200" d:Background="White"
+        d:DataContext="{Binding Source={x:Static viewModels:DesignTimeViewModelLocator.HistoryListViewModel}}"
+        >
+    <ListView ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}">
+        <ListView.CommandBindings>
+            <CommandBinding Command="ApplicationCommands.Delete" Executed="DeleteItem" CanExecute="CanDeleteItem"  />
+        </ListView.CommandBindings>
+        <d:ListView.ItemsSource>
+            <x:Array Type="{x:Type system:String}">
+                <system:String>Item 1</system:String>
+                <system:String>Item 2</system:String>
+                <system:String>Item 3</system:String>
+            </x:Array>
+        </d:ListView.ItemsSource>
+        <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+            </Style>
+        </ListBox.ItemContainerStyle>
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <DockPanel LastChildFill="True">
+                    
+                    <DockPanel.InputBindings>
+                        <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DataContext.UseItemCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}}" />
+                    </DockPanel.InputBindings>
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                        <Button Command="{Binding DataContext.UseItemCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}}" CommandParameter="{Binding}"
+                                MaxHeight="20" MaxWidth="20" ToolTip="Use this item"
+                                Content="{materialDesign:PackIcon Kind=SelectionEllipseArrowInside}" Style="{StaticResource MaterialDesignFloatingActionButton}"></Button>
+                        <Button Command="ApplicationCommands.Delete" CommandParameter="{Binding}" DockPanel.Dock="Right"
+                            MaxHeight="20" MaxWidth="20" Margin="10,0,0,0"
+                            Content="{materialDesign:PackIcon Kind=Delete}" Style="{StaticResource MaterialDesignFloatingActionButton}"></Button>
+                    </StackPanel>
+                    <TextBlock Text="{Binding}" DockPanel.Dock="Left"></TextBlock>
+                </DockPanel>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+</UserControl>
