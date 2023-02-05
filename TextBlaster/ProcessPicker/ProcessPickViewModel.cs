@@ -21,7 +21,7 @@ public class ProcessPickViewModel : RegionViewModelBase
         : base(regionManager)
     {
         _eventAggregator = eventAggregator;
-        _throttleFilter.Throttle(TimeSpan.FromMilliseconds(500));
+        _ = _throttleFilter.Throttle(TimeSpan.FromMilliseconds(500));
         _throttleFilter.Subscribe(_ => LoadProcesses());
     }
 
