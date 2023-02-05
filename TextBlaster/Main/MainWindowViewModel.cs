@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
+using Microsoft.VisualStudio.Threading;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
@@ -11,6 +12,7 @@ namespace TextBlaster.Main;
 [AddINotifyPropertyChangedInterface]
 public class MainWindowViewModel : RegionViewModelBase
 {
+    private readonly IEventAggregator _eventAggregator;
     public Config Config { get; }
     public string Title { get; set; } = "Text Blaster";
     public DelegateCommand<RoutedUICommand> NavigateCmd { get; set; }
@@ -21,6 +23,16 @@ public class MainWindowViewModel : RegionViewModelBase
     {
         var region = RegionManager.Regions[RegionNames.ContentRegion];
         region.NavigationService.Navigated += NavigationService_Navigated;
+        CheckAppUpdateAsync().Forget();
+    }
+
+    private async Task CheckAppUpdateAsync()
+    {
+        var updated = await AutoUpdateFromGitHub.UpdateAsync();
+        if (updated)
+        {
+            _eventAggregator.GetEvent<GenericMessageEvent>().Publish("New version installed, restart application to apply.");
+        }
     }
 
     private bool CanNavigate(RoutedCommand cmd)
@@ -56,6 +68,7 @@ public class MainWindowViewModel : RegionViewModelBase
 
     public MainWindowViewModel(IRegionManager regionManager, IEventAggregator eventAggregator, Config config) : base(regionManager)
     {
+        _eventAggregator = eventAggregator;
         Config = config;
         eventAggregator.GetEvent<GenericMessageEvent>().Subscribe(x => SnackBarMsgQueue.Enqueue(x));
         NavigateCmd = new DelegateCommand<RoutedUICommand>(Navigate, CanNavigate);

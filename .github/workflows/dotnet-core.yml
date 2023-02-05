@@ -1,0 +1,41 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ master, release-* ]
+  pull_request:
+    branches: [ master, release-* ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip-ci]')"
+
+    steps:
+    - uses: actions/checkout@v2 
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Generate BuildNumber
+      id: version
+      run: echo "::set-output name=version::$(date +%Y.%-m).${GITHUB_RUN_NUMBER}"
+    - name: Install Squirrel
+      id: squirrel
+      run: nuget install Clowd.Squirrel -version 2.9.40 -ExcludeVersion -OutputDirectory "./squirrel"
+    - name: Build
+      id: Build
+      run: dotnet publish ./TextBlaster/TextBlaster.csproj --output ./TextBlaster/publish --configuration Release -r win10-x64 /p:BuildNumber=${{steps.version.outputs.version}} /p:PublishSingleFile=true --self-contained
+    - name: Pack
+      run: ./squirrel/Clowd.Squirrel/tools/Squirrel.exe pack --packId TextBlaster --packVersion ${{steps.version.outputs.version}} --packDir ./TextBlaster/publish --icon ./TextBlaster/applicationicon.ico
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/heads/release-')
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{steps.version.outputs.version}}
+        body:
+        draft: false
+        prerelease: true
+        files: ./Releases/*
