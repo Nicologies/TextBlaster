@@ -146,6 +146,12 @@ public class SenderViewModel : RegionViewModelBase
 
         try
         {
+            if (ProcessId.Value == Process.GetCurrentProcess().Id)
+            {
+                _eventAggregator.GetEvent<GenericMessageEvent>().Publish("Send to this application not allowed");
+                return;
+            }
+
             var app = Application.Attach(ProcessId.Value);
 
             using var automation = new UIA3Automation();
