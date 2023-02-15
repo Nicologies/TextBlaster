@@ -166,7 +166,10 @@ public class SenderViewModel : RegionViewModelBase
 
             foreach (var modal in wnd.ModalWindows)
             {
-                modal.Focus();
+                if (modal.IsEnabled)
+                {
+                    modal.Focus();
+                }
             }
 
             Keyboard.Type(TextToSend);
