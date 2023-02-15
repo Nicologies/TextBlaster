@@ -189,6 +189,10 @@ public class SenderViewModel : RegionViewModelBase
         {
             _eventAggregator.GetEvent<GenericMessageEvent>()
                 .Publish(ex.ToString());
+
+            // retry with new process id
+            ProcessId = null;
+            Submit();
         }
     }
 
