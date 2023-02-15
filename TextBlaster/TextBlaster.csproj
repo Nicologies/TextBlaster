@@ -7,6 +7,12 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="publish\**" />
+    <EmbeddedResource Remove="publish\**" />
+    <None Remove="publish\**" />
+    <Page Remove="publish\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="applicationicon.ico" />
   </ItemGroup>
   <ItemGroup>
